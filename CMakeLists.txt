@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(Clox VERSION 1.0)
+project(Clox VERSION 1.0 LANGUAGES "C")
 
 set(CMAKE_DEBUG_POSTFIX d)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(tutorial_compiler_flags INTERFACE)
+
 # target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
 
 # add compiler warning flags just when building this project via
@@ -17,6 +19,7 @@ target_compile_options(tutorial_compiler_flags INTERFACE
   "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
   "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
+
 
 # add the executable
 add_executable(Clox ./src/clox.c)
