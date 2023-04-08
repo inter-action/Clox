@@ -15,4 +15,4 @@ configure:
 
 .PHONY: clean
 clean:
-	rm -r $(BUILD_DIR)
+	rm -r $(BUILD_DIR)/*

@@ -21,8 +21,10 @@ target_compile_options(tutorial_compiler_flags INTERFACE
 )
 
 
+aux_source_directory(./src SOURCES) 
+
 # add the executable
-add_executable(Clox ./src/clox.c)
+add_executable(Clox ${SOURCES})
 set_target_properties(Clox PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
 # add the binary tree to the search path for include files
