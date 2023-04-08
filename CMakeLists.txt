@@ -4,6 +4,8 @@ project(Clox VERSION 1.0)
 
 set(CMAKE_DEBUG_POSTFIX d)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_library(tutorial_compiler_flags INTERFACE)
 # target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
 

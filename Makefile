@@ -2,11 +2,12 @@
 BUILD_DIR := ./build
 
 
+.PHONY: build
 build:
-	cmake --build
+	cmake --build build
 
 run:
-	./build/Clox
+	./build/bin/Clox
 
 configure:
 	mkdir -p $(BUILD_DIR)
