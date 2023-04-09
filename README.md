@@ -1,7 +1,7 @@
 
 ## About
 
-following book [crafting intpreter](https://craftinginterpreters.com/contents.html)
+following book [crafting interpreters](https://craftinginterpreters.com/contents.html)
 
 
 ## Tips
@@ -11,5 +11,9 @@ following book [crafting intpreter](https://craftinginterpreters.com/contents.ht
 man [3] realloc
 ```
 
-* when add `()` around macro?
+* when add `()` around macro?  
+
 when the referee is used in calculation
+
+
+* Lsp configure clangd - https://clangd.llvm.org/installation.html
