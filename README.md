@@ -4,6 +4,15 @@
 following book [crafting interpreters](https://craftinginterpreters.com/contents.html)
 
 
+## build
+
+```
+make configure
+make 
+make run
+```
+
+
 ## Tips
 
 ```
