@@ -33,10 +33,10 @@ static int simpleInstruction(char* name, int offset){
 int disassembleInstruction(Chunk* chunk, int offset) {
     printf("%04d ", offset);
 
-    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
+    if (offset > 0 && chunkGetLine(chunk, offset) == chunkGetLine(chunk, offset -  1)) {
         printf("   | ");
     } else {
-        printf("%4d ", chunk->lines[offset]);
+        printf("%4d ", chunkGetLine(chunk, offset));
     }
 
     uint8_t opcode = chunk->code[offset];
