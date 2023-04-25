@@ -17,7 +17,7 @@ static int constantInstruction(char* name, Chunk* chunk, int offset){
     uint8_t index = chunk->code[offset + 1];
     Value value = chunk->constants.values[index];
 
-    printf("%-16s %4d '", name, index);
+    printf("%-16s %4d# '", name, index);
     printValue(value);
     printf("'\n");
     
@@ -44,6 +44,16 @@ int disassembleInstruction(Chunk* chunk, int offset) {
     switch (opcode) {
         case OP_CONSTANT:
             return constantInstruction("OP_CONSTANT", chunk, offset);
+        case OP_ADD:
+            return simpleInstruction("OP_ADD", offset);
+        case OP_SUBTRACT:
+            return simpleInstruction("OP_SUBTRACT", offset);
+        case OP_MULTIPLY:
+            return simpleInstruction("OP_MULTIPLY", offset);
+        case OP_DIVIDE:
+            return simpleInstruction("OP_DIVIDE", offset);
+        case OP_NEGATE:
+            return simpleInstruction("OP_NEGATE", offset);
         case OP_RETURN:
             return simpleInstruction("OP_RETURN", offset);
         default:

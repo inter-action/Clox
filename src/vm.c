@@ -26,6 +26,14 @@ void freeVM() {
 static InterpretResult run(){
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+// ?: does this `double` break the abstraction for Value type?
+#define BINDARY_OP(op) \
+    do { \
+        double b = pop(); \
+        double a = pop(); \
+        push(a op b); \
+    } while (false)
+
     for(;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         // print constants stack
@@ -51,6 +59,15 @@ static InterpretResult run(){
                     push(constant);
                     break;
                 }
+            case OP_ADD: BINDARY_OP(+);break;
+            case OP_SUBTRACT: BINDARY_OP(-);break;
+            case OP_MULTIPLY: BINDARY_OP(*);break;
+            case OP_DIVIDE: BINDARY_OP(/);break;
+            case OP_NEGATE:
+                {
+                    push(-pop()); 
+                    break;
+                }
             case OP_RETURN: 
                 {
                     printValue(pop());
@@ -60,6 +77,8 @@ static InterpretResult run(){
         }
     }
 #undef READ_BYTE
+#undef READ_CONSTANT
+#undef BINDARY_OP
 }
 
 InterpretResult interpret(Chunk *chunk) {
