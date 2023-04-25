@@ -32,6 +32,9 @@ when the referee is used in calculation
 
 # c language
 
+-> pointer unit
+the unit for pointer is byte. as u can see from this link https://www.tutorialspoint.com/cprogramming/c_pointer_arithmetic.htm
+
 -> printf - https://cplusplus.com/reference/cstdio/printf/
 %[flags][width][.precision][length]specifier
 
