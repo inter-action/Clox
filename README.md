@@ -1,3 +1,7 @@
+## Todos
+
+* debug with lldb - https://lldb.llvm.org/use/tutorial.html
+
 
 ## About
 
@@ -11,6 +15,7 @@ make configure
 make 
 make run
 ```
+
 
 
 ## Tips
@@ -30,7 +35,9 @@ when the referee is used in calculation
 
 # Notes
 
-# c language
+## c language
+
+all c related notes in code is marked with `// c:`
 
 -> pointer unit
 the unit for pointer is byte. as u can see from this link https://www.tutorialspoint.com/cprogramming/c_pointer_arithmetic.htm
@@ -56,5 +63,3 @@ link:
     * c LOG macro
     * 
     
-
-

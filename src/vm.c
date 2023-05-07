@@ -1,7 +1,9 @@
+#include <stdio.h>
+
 #include "common.h"
 #include "debug.h"
 #include "vm.h"
-#include <stdio.h>
+#include "compiler.h"
 
 
 VM vm;
@@ -81,11 +83,9 @@ static InterpretResult run(){
 #undef BINDARY_OP
 }
 
-InterpretResult interpret(Chunk *chunk) {
-   vm.chunk = chunk; 
-   vm.ip = vm.chunk->code;
-
-   return run();
+InterpretResult interpret(const char* source) {
+    compile(source);
+    return INTERPRET_OK;
 }
 
 
@@ -99,4 +99,3 @@ Value pop(){
     // this can underflow, if not track properly
     return *vm.stackTop;
 }
-
