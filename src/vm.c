@@ -29,6 +29,7 @@ static InterpretResult run(){
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 // ?: does this `double` break the abstraction for Value type?
+// I would think so, the better way is to use `Value` for type instead of double
 #define BINDARY_OP(op) \
     do { \
         double b = pop(); \
@@ -48,9 +49,9 @@ static InterpretResult run(){
         printf("\n");
 
         // disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code)/sizeof(uint8_t));
-        // m:                                                             ^- a devide is wrong
-        // basic unit for is byte. so this is actually right, since sizeof(uint8_t) == 1, 
-        // the following just line just implicitly implying this
+        // m:                                                             ^- a divide is wrong
+        // basic unit for pointer is byte. so this is actually right, since sizeof(uint8_t) == 1, 
+        // the following line just implicitly imply this
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
         uint8_t instruction;
