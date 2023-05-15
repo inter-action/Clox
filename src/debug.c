@@ -5,8 +5,9 @@
 
 void disassembleChunk(Chunk* chunk, char* name){
     printf("== %s ==\n", name);
+    int offset = 0;
 
-    for (int offset = 0; offset < chunk->count; ) {
+    while ( offset < chunk->count ) {
         int next = disassembleInstruction(chunk, offset);
         offset = next;
     }
@@ -65,4 +66,3 @@ int disassembleInstruction(Chunk* chunk, int offset) {
 
     return 0;
 }
-

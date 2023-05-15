@@ -29,8 +29,11 @@ int getEncodingLine(RLE_LineEncoding* encoding, int index);
 typedef struct {
     int count;
     int capacity;
+    // program binary code
     uint8_t* code; // uint8_t[]
+    // line info
     RLE_LineEncoding line_encodings;
+    // like .rodata section, preserves instruction constant value
     ValueArray constants;
 } Chunk;
 

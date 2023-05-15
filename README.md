@@ -27,9 +27,11 @@ man [3] realloc
 
 * Lsp configure clangd - https://clangd.llvm.org/installation.html
 * clang-format
+    * manual - https://clang.llvm.org/docs/ClangFormatStyleOptions.html
     * format file in vim
         * select all in visual mode
         * `:!clang-format`
+
 
 
 # Notes
