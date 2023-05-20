@@ -2,4 +2,13 @@
 " :source .vimrc
 
 " format current file
-map <leader>ff :%! clang-format %<CR>
+" nnoremap <leader>ff :wa <bar> %! clang-format<CR>   
+
+lua << EOF
+
+vim.keymap.set('n', '<leader>ff', function()
+    vim.api.nvim_command("wa")
+    vim.api.nvim_command("%! clang-format")
+end)
+
+EOF
