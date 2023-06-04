@@ -1,44 +1,71 @@
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "chunk.h"
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
-#include "compiler.h"
-
 
 VM vm;
 
-
-static void resetStack(){
+static void resetStack() {
     vm.stackTop = vm.stack;
     // Q: equivlent?
-    // A: no, vm.stack is already the pointer to the first element, so &vm.stack would create another redirection, which is wrong
-    // vm.stackTop = &vm.stack;
+    // A: no, vm.stack is already the pointer to the first element, so &vm.stack would create another redirection, which
+    // is wrong vm.stackTop = &vm.stack;
 }
 
+static void runtimeError(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+    fputs("\n", stderr);
+
+    size_t instruction = vm.ip - vm.chunk->code - 1;
+    int line = chunkGetLine(vm.chunk, instruction);
+    fprintf(stderr, "[line %d] in script\n", line);
+
+    // reset value stack, discard all
+    resetStack();
+}
+
+static Value peek(int distance) {
+    // this can under flow
+    return *(vm.stackTop - distance - 1);
+
+    // the book using this following line, but I prefer above
+    // return vm.stackTop[-1 - distance];
+}
+
+static bool isFalsey(Value value) {
+    return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
 
 void initVM() {
     resetStack();
 }
 
-void freeVM() {
+void freeVM() {}
 
-}
-
-static InterpretResult run(){
+static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 // ?: does this `double` break the abstraction for Value type?
 // I would think so, the better way is to use `Value` for type instead of double
-#define BINDARY_OP(op) \
-    do { \
-        double b = pop(); \
-        double a = pop(); \
-        push(a op b); \
+#define BINDARY_OP(valueType, op)                                                                                      \
+    do {                                                                                                               \
+        if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                                                              \
+            runtimeError("Operands must be numbers.");                                                                 \
+            return INTERPRET_RUNTIME_ERROR;                                                                            \
+        }                                                                                                              \
+        double b = AS_NUMBER(pop());                                                                                   \
+        double a = AS_NUMBER(pop());                                                                                   \
+        push(valueType(a op b));                                                                                       \
     } while (false)
 
-    for(;;) {
+    for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
         // print constants stack
         printf("          ");
@@ -51,33 +78,65 @@ static InterpretResult run(){
 
         // disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code)/sizeof(uint8_t));
         // m:                                                             ^- a divide is wrong
-        // basic unit for pointer is byte. so this is actually right, since sizeof(uint8_t) == 1, 
+        // basic unit for pointer is byte. so this is actually right, since sizeof(uint8_t) == 1,
         // the following line just implicitly imply this
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif
         uint8_t instruction;
         switch (instruction = READ_BYTE()) {
-            case OP_CONSTANT: 
-                {
-                    Value constant = READ_CONSTANT();
-                    push(constant);
-                    break;
-                }
-            case OP_ADD: BINDARY_OP(+);break;
-            case OP_SUBTRACT: BINDARY_OP(-);break;
-            case OP_MULTIPLY: BINDARY_OP(*);break;
-            case OP_DIVIDE: BINDARY_OP(/);break;
+            case OP_CONSTANT: {
+                Value constant = READ_CONSTANT();
+                push(constant);
+                break;
+            }
+            case OP_NIL:
+                push(NIL_VAL);
+                break;
+            case OP_TRUE:
+                push(BOOL_VAL(true));
+                break;
+            case OP_FALSE:
+                push(BOOL_VAL(false));
+                break;
+            case OP_EQUAL: {
+                Value b = pop();
+                Value a = pop();
+                push(BOOL_VAL(valuesEqual(a, b)));
+                break;
+            }
+            case OP_GREATER:
+                BINDARY_OP(BOOL_VAL, >);
+                break;
+            case OP_LESS:
+                BINDARY_OP(BOOL_VAL, <);
+                break;
+            case OP_ADD:
+                BINDARY_OP(NUMBER_VAL, +);
+                break;
+            case OP_SUBTRACT:
+                BINDARY_OP(NUMBER_VAL, -);
+                break;
+            case OP_MULTIPLY:
+                BINDARY_OP(NUMBER_VAL, *);
+                break;
+            case OP_DIVIDE:
+                BINDARY_OP(NUMBER_VAL, /);
+                break;
+            case OP_NOT:
+                push(BOOL_VAL(isFalsey(pop())));
+                break;
             case OP_NEGATE:
-                {
-                    push(-pop()); 
-                    break;
+                if (!IS_NUMBER(peek(0))) {
+                    runtimeError("Operand must be a number.");
+                    return INTERPRET_RUNTIME_ERROR;
                 }
-            case OP_RETURN: 
-                {
-                    printValue(pop());
-                    printf("\n");
-                    return INTERPRET_OK;
-                } 
+                push(NUMBER_VAL(-(AS_NUMBER(pop()))));
+                break;
+            case OP_RETURN: {
+                printValue(pop());
+                printf("\n");
+                return INTERPRET_OK;
+            }
         }
     }
 #undef READ_BYTE
@@ -104,13 +163,12 @@ InterpretResult interpret(const char* source) {
     return result;
 }
 
-
-void push(Value value){
+void push(Value value) {
     *vm.stackTop = value;
     vm.stackTop++;
 }
 
-Value pop(){
+Value pop() {
     vm.stackTop--;
     // this can underflow, if not track properly
     return *vm.stackTop;

@@ -6,10 +6,17 @@
 
 typedef enum {
     OP_CONSTANT,
+    OP_NIL,
+    OP_TRUE,
+    OP_FALSE,
+    OP_EQUAL,
+    OP_GREATER,
+    OP_LESS,
     OP_ADD,
     OP_SUBTRACT,
     OP_MULTIPLY,
     OP_DIVIDE,
+    OP_NOT,
     OP_NEGATE,
     OP_RETURN, // so this is an uint8_t type
 } OpCode;
@@ -25,7 +32,7 @@ void freeEncoding(RLE_LineEncoding* encoding);
 void writeLine(RLE_LineEncoding* encoding, int line);
 int getEncodingLine(RLE_LineEncoding* encoding, int index);
 
-// code instructions in binary format, 
+// code instructions in binary format,
 typedef struct {
     int count;
     int capacity;

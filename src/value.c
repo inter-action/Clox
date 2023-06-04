@@ -1,15 +1,13 @@
 #include <stdio.h>
 
-#include "value.h"
 #include "memory.h"
+#include "value.h"
 
-void initValueArray(ValueArray* array){
+void initValueArray(ValueArray* array) {
     array->count = 0;
     array->capacity = 0;
     array->values = NULL;
 }
-
-
 
 void writeValueArray(ValueArray* array, Value value) {
     if (array->capacity < array->count + 1) {
@@ -22,13 +20,41 @@ void writeValueArray(ValueArray* array, Value value) {
     array->count++;
 }
 
-
-
 void freeValueArray(ValueArray* array) {
     FREE_ARRAY(Value, array->values, array->capacity);
     initValueArray(array);
 }
 
 void printValue(Value value) {
-    printf("%g", value);
+    switch (value.type) {
+        case VAL_BOOL:
+            printf(AS_BOOL(value) ? "true" : "false");
+            break;
+        case VAL_NIL:
+            printf("nil");
+            break;
+        case VAL_NUMBER:
+            // basically %g is short representation for float number
+            printf("%g", AS_NUMBER(value));
+            break;
+    }
+}
+
+// cant use `memcmp` to do the job, because the padding,
+// https://craftinginterpreters.com/types-of-values.html#two-new-types
+bool valuesEqual(Value a, Value b) {
+    if (a.type != b.type) {
+        return false;
+    }
+
+    switch (a.type) {
+        case VAL_BOOL:
+            return AS_BOOL(a) == AS_BOOL(b);
+        case VAL_NIL:
+            return true;
+        case VAL_NUMBER:
+            return AS_NUMBER(a) == AS_NUMBER(b);
+        default:
+            return false;
+    }
 }
