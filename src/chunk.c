@@ -37,16 +37,6 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line){
 }
 
 
-void* reallocate(void* pointer, size_t oldSize, size_t newSize){
-    if (newSize == 0) {
-        free(pointer);
-        return NULL;
-    }
-
-    void* result = realloc(pointer, newSize);
-    if (result == NULL) exit(1);
-    return result;
-}
 
 int addConstant(Chunk* chunk, Value value) {
     writeValueArray(&chunk->constants, value);
@@ -105,4 +95,3 @@ int getEncodingLine(RLE_LineEncoding* encoding, int index) {
 
     return encoding->encodings[cursor - 1];
 }
-
