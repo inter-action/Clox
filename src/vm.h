@@ -7,10 +7,10 @@
 #define STACK_MAX 256
 
 typedef struct {
-    Chunk* chunk;
-    uint8_t* ip;
-    Value stack[STACK_MAX];
-    Value* stackTop;
+    Chunk* chunk;           // program instructions
+    uint8_t* ip;            // program instruction pointer
+    Value stack[STACK_MAX]; // static allocated Value stack
+    Value* stackTop;        // Value stack pointer
     Obj* objects;
 } VM;
 
@@ -20,6 +20,7 @@ typedef enum {
     INTERPRET_RUNTIME_ERROR,
 } InterpretResult;
 
+// todo: why use extern here?
 extern VM vm;
 
 void initVM();

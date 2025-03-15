@@ -14,14 +14,13 @@ VM vm;
 
 static void resetStack() {
     vm.stackTop = vm.stack;
-    // Q: equivlent?
-    // A: no, vm.stack is already the pointer to the first element, so &vm.stack would create another redirection, which
-    // is wrong vm.stackTop = &vm.stack;
 }
 
 static void runtimeError(const char* format, ...) {
     va_list args;
+    //      declare a type to hold rest of arguments
     va_start(args, format);
+    //       ^ assign rest arguments to `args`
     vfprintf(stderr, format, args);
     va_end(args);
     fputs("\n", stderr);
@@ -46,6 +45,8 @@ static bool isFalsey(Value value) {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
+// string concatenate implementation
+// two strings read from the value stack
 static void concatenate() {
     ObjString* a = AS_STRING(pop());
     ObjString* b = AS_STRING(pop());
@@ -66,6 +67,7 @@ void initVM() {
 }
 
 void freeVM() {
+    // todo: also free `vm.chunk` ?
     freeObjects();
 }
 
@@ -87,7 +89,7 @@ static InterpretResult run() {
 
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
-        // print constants stack
+        // print constants stack per iteration
         printf("          ");
         for (Value* slot = vm.stack; slot < vm.stackTop; slot++) {
             printf("[ ");
@@ -109,7 +111,7 @@ static InterpretResult run() {
                 push(constant);
                 break;
             }
-            case OP_NIL:
+            case OP_NIL: // nil, like object-c or lua
                 push(NIL_VAL);
                 break;
             case OP_TRUE:
@@ -132,8 +134,10 @@ static InterpretResult run() {
                 break;
             case OP_ADD: {
                 if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
+                    // string add
                     concatenate();
                 } else if (IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
+                    // number add
                     double b = AS_NUMBER(pop());
                     double a = AS_NUMBER(pop());
                     push(NUMBER_VAL(a + b));
@@ -200,6 +204,6 @@ void push(Value value) {
 
 Value pop() {
     vm.stackTop--;
-    // this can underflow, if not track properly
+    // todo: this can underflow, if not track properly
     return *vm.stackTop;
 }

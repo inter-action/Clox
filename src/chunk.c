@@ -35,6 +35,8 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
     writeLine(&chunk->line_encodings, line);
 }
 
+// todo: why put constant in different field, I mean why
+// not put it into chunk->code?
 int addConstant(Chunk* chunk, Value value) {
     writeValueArray(&chunk->constants, value);
     return chunk->constants.count - 1;

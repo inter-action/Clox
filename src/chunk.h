@@ -43,7 +43,11 @@ typedef struct {
     // line info
     RLE_LineEncoding line_encodings;
     // like .rodata section, preserves instruction constant value
-    // todo: add example here
+    // @example:
+    //   - when put instruction like `call printf OP_CONSTANT 32` into .code field
+    //   - this 32 reference the array index of this `constants` , which
+    //   - could contains string like `hello world.`
+    //   - the reason is obvious, too keep the code section lean
     // @type {Value[]}
     ValueArray constants;
 } Chunk;

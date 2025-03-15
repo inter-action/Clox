@@ -23,6 +23,7 @@ typedef struct {
     bool panicMode;
 } Parser;
 
+// the lower the higher of the enum value would be
 typedef enum {
     PREC_NONE,
     PREC_ASSIGNMENT, // =
@@ -37,6 +38,7 @@ typedef enum {
     PREC_PRIMARY
 } Precedence;
 
+// clang function pointer
 typedef void (*ParseFn)();
 
 typedef struct {
@@ -118,7 +120,6 @@ static uint8_t makeConstant(Value value) {
         error("Too many constants in one chunk.");
         return 0;
     }
-    // why not make addConstant uint8_t?
     return (uint8_t)constant;
 }
 
@@ -135,14 +136,18 @@ static void endCompiler() {
 #endif
 }
 
-// declarations
+// empty declarations
 static void expression();
 static void parsePrecedence(Precedence precedence);
 static ParseRule* getRule(TokenType tokenType);
 
 static void binary() {
+    //  - 10 + b * c
+    //       ^ previous
     TokenType operatorType = parser.previous.type;
     ParseRule* rule = getRule(operatorType);
+    //  - 10 + b * c
+    //       ^ precedence == PREC_NONE, so +1 gives PREC_FACTOR
     parsePrecedence((Precedence)(rule->precedence + 1)); // force left associate for expression
 
     switch (operatorType) {
@@ -289,8 +294,22 @@ ParseRule rules[] = {
 // clang-format on
 
 // parse to operator with precedence higher than <precedence>
+// @example
+//  - 10 + b * c
+//  - after parsing, the code instruction would look like this:
+//  - [(load 10), (load b), (load c), (op *), (op +)]
+//  - when vm execute:
+//  - mem stack [10, b, c]
+//  - current op: *
+//  - mem stack [10], poped [b, c]
+//  - mem stack [10, (b*c)]
+//  - current op: +
+//  - mem stack [], poped [10, (b*c)]
+//  - mem stack [10 + b*c]
 static void parsePrecedence(Precedence precedence) {
     advance();
+    //  - 10 + b * c
+    //  -    ^ match number infix rule
     ParseFn prefixRule = getRule(parser.previous.type)->prefix;
     if (prefixRule == NULL) {
         error("Expect expression");
@@ -301,7 +320,11 @@ static void parsePrecedence(Precedence precedence) {
 
     while (precedence <= getRule(parser.current.type)->precedence) {
         advance();
+        //  - 10 + b * c
+        //         ^
         ParseFn infixRule = getRule(parser.previous.type)->infix;
+        //  - 10 + b * c
+        //       ^ binary
         infixRule();
     }
 }
@@ -317,7 +340,10 @@ bool compile(const char* source, Chunk* chunk) {
     parser.hadError = false;
     parser.panicMode = false;
 
+    //  - 10 + b * c
     advance();
+    //  - 10 + b * c
+    //     ^
     expression();
     consume(TOKEN_EOF, "Expected end of expression.");
 

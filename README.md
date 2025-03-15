@@ -1,3 +1,7 @@
+
+
+
+
 ## Todos
 
 * debug with lldb - https://lldb.llvm.org/use/tutorial.html
@@ -16,6 +20,19 @@ make
 make run
 ```
 
+
+## src files
+
+```
+scanner          // read source by token
+compiler         // construct ast nodes using tokens, handling operator precedence
+vm               // the actual vm implementation, simply run instructions one by one
+```
+
+
+## implementation notes
+
+* handle operator precedence is an important part of any parser. the book use `pratt-parser` to handle this part. as described in here - https://craftinginterpreters.com/compiling-expressions.html#a-pratt-parser
 
 
 ## Tips
