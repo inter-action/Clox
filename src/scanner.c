@@ -5,7 +5,9 @@
 #include "scanner.h"
 
 typedef struct {
+    // start pointer to source string
     const char* start;
+    // current pointer to source string
     const char* current;
     int line;
 } Scanner;
@@ -93,14 +95,14 @@ static void skipWhitespace() {
                 advance();
                 break;
             case '/':
-                if (peekNext() == '/') {
+                if (peekNext() == '/') { // comment
                     while (peek() != '\n' && !isAtEnd())
                         advance();
-                } else {
+                } else { // don't consume
                     return;
                 }
                 break; // continue loop
-            default:
+            default:   // don't consume
                 return;
         }
     }
@@ -127,7 +129,7 @@ static TokenType identifierType() {
         case 'e':
             return checkKeyword(1, 3, "les", TOKEN_ELSE);
         case 'f':
-            if (scanner.current - scanner.start > 1) { // precheck for read in the next line
+            if (scanner.current - scanner.start > 1) { // assert that scanner.start[1] exist
                 switch (scanner.start[1]) {
                     case 'a':
                         return checkKeyword(2, 3, "lse", TOKEN_FALSE);

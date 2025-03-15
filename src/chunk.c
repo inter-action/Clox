@@ -89,6 +89,7 @@ int getEncodingLine(RLE_LineEncoding* encoding, int index) {
         cursor += 2;
 
         if ((index + 1) <= counter || cursor >= encoding->count) {
+            //                                   ^ reach to the end
             break;
         }
     }

@@ -47,6 +47,9 @@ the unit for pointer is byte. as u can see from this link https://www.tutorialsp
 %[flags][width][.precision][length]specifier
 
 
+-> when to put things in clang's header files
+* it's like a public exports. when u wanna other's to use/see this symbol
+
 # chapter 14
 
 ## memory allocator
