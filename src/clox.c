@@ -2,21 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
 #include "chunk.h"
+#include "common.h"
 #include "debug.h"
 #include "vm.h"
 
-
-static void repl(){
+static void repl() {
     char line[1024];
-    
-    while(true) {
+
+    while (true) {
         printf("> ");
 
         if (!fgets(line, sizeof(line), stdin)) {
             printf("\n");
-            break; 
+            break;
         }
 
         interpret(line);
@@ -29,7 +28,6 @@ static char* readFile(const char* path) {
         fprintf(stderr, "Could not open file \"%s\" .\n", path);
         exit(74);
     }
-    
 
     // get fileSize
     fseek(file, 0L, SEEK_END);
@@ -43,14 +41,14 @@ static char* readFile(const char* path) {
         exit(74);
     }
 
-    // read file 
+    // read file
     size_t bytesRead = fread(buffer, sizeof(char), fileSize, file);
     if (bytesRead < fileSize) {
         fprintf(stderr, "Could not read file \"%s\" .\n", path);
         exit(74);
     }
     buffer[bytesRead] = '\0';
-    
+
     fclose(file);
 
     return buffer;
@@ -61,8 +59,10 @@ static void runFile(const char* path) {
     InterpretResult result = interpret(source);
     free(source);
 
-    if (result == INTERPRET_COMPILE_ERROR) exit(65);
-    if (result == INTERPRET_RUNTIME_ERROR) exit(70);
+    if (result == INTERPRET_COMPILE_ERROR)
+        exit(65);
+    if (result == INTERPRET_RUNTIME_ERROR)
+        exit(70);
 }
 
 int main(int argc, const char* argv[]) {

@@ -3,6 +3,7 @@
 
 #include "common.h"
 
+// c: empty declaration, solve circular dependencies in c
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
 
@@ -19,6 +20,7 @@ typedef struct {
         bool boolean;
         double number;
         Obj* obj;
+        //   ^unsize type has to using a pointer.
     } as; // the `as` naming is clever
 } Value;
 
@@ -40,7 +42,6 @@ typedef struct {
 #define NUMBER_VAL(value) ((Value){VAL_NUMBER, {.number = value}})
 #define OBJ_VAL(object) ((Value){VAL_OBJ, {.obj = (Obj*)object}})
 //                                        ^ union need another curly braces
-
 
 typedef struct {
     int capacity;

@@ -21,9 +21,11 @@ typedef enum {
     OP_RETURN, // so this is an uint8_t type
 } OpCode;
 
+// all the line NO. info in the source code
 typedef struct {
     int count;
     int capacity;
+    // stored in (times_of_occurrence, line_number)
     int* encodings;
 } RLE_LineEncoding;
 
@@ -41,6 +43,8 @@ typedef struct {
     // line info
     RLE_LineEncoding line_encodings;
     // like .rodata section, preserves instruction constant value
+    // todo: add example here
+    // @type {Value[]}
     ValueArray constants;
 } Chunk;
 

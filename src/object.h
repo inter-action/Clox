@@ -8,7 +8,9 @@
 
 #define IS_STRING(value) isObjType(value, OBJ_STRING)
 
+// @type {ObjString*}
 #define AS_STRING(value) ((ObjString*)AS_OBJ(value))
+// @type {char*}
 #define AS_CSTRING(value) (((ObjString*)AS_OBJ(value))->chars)
 
 typedef enum {
@@ -25,7 +27,8 @@ struct Obj {
 
 struct ObjString {
     Obj obj;
-    //  ^ , in c, you can safely convert it to Obj or ObjString
+    //  ^ , in c, due to ObjString's layout is superset of Obj
+    //  that you can safely convert it to Obj or ObjString
     int length;
     char* chars;
 };

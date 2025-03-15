@@ -19,8 +19,8 @@ configure:
 	cmake -S . -B $(BUILD_DIR)
 
 
-format:
-	clang-format -i $(SRCS)
+fmt:
+	clang-format --style=file:./.clang-format -i $(SRCS)
 
 .PHONY: clean
 clean:

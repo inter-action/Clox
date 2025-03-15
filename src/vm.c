@@ -6,8 +6,8 @@
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
-#include "object.h"
 #include "memory.h"
+#include "object.h"
 #include "vm.h"
 
 VM vm;
@@ -46,7 +46,7 @@ static bool isFalsey(Value value) {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
-static void concatenate(){
+static void concatenate() {
     ObjString* a = AS_STRING(pop());
     ObjString* b = AS_STRING(pop());
 

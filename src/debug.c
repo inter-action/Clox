@@ -1,5 +1,5 @@
-#include "chunk.h"
 #include "debug.h"
+#include "chunk.h"
 #include <stdio.h>
 
 void disassembleChunk(Chunk* chunk, char* name) {

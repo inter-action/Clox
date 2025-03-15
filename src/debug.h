@@ -7,4 +7,3 @@ void disassembleChunk(Chunk* chunk, char* name);
 int disassembleInstruction(Chunk* chunk, int offset);
 
 #endif
-
