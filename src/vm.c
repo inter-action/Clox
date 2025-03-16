@@ -48,8 +48,8 @@ static bool isFalsey(Value value) {
 // string concatenate implementation
 // two strings read from the value stack
 static void concatenate() {
-    ObjString* a = AS_STRING(pop());
     ObjString* b = AS_STRING(pop());
+    ObjString* a = AS_STRING(pop());
 
     int length = a->length + b->length;
     char* chars = ALLOCATE(char, length + 1);

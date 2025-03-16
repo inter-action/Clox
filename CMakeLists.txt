@@ -27,6 +27,9 @@ aux_source_directory(./src SOURCES)
 add_executable(Clox ${SOURCES})
 set_target_properties(Clox PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
+# link libs
+target_link_libraries(Clox PUBLIC tutorial_compiler_flags)
+
 # add the binary tree to the search path for include files
 # so that we will find CloxConfig.h
 target_include_directories(Clox PUBLIC "${PROJECT_BINARY_DIR}")

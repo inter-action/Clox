@@ -17,15 +17,19 @@ build:
 	cmake --build build
 
 run:
-	./build/bin/Clox
+	./build/bin/Cloxd
 
+# build debug version by default
 configure: clean
 	mkdir -p $(BUILD_DIR)
-	cmake -S . -B $(BUILD_DIR)
+	cmake -DCMAKE_BUILD_TYPE=Debug -S . -B $(BUILD_DIR)
 
 
 fmt:
 	clang-format --style=file:./.clang-format -i $(SRCS)
+
+debug_gdb:
+	gdb ./build/bin/Cloxd
 
 .PHONY: clean
 clean:

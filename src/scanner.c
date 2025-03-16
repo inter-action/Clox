@@ -191,7 +191,7 @@ static Token number() {
 }
 
 static Token string() {
-    while (peek() != '"' || !isAtEnd()) {
+    while (peek() != '"' && !isAtEnd()) {
         advance();
     }
 

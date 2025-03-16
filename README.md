@@ -4,7 +4,6 @@
 
 ## Todos
 
-* debug with lldb - https://lldb.llvm.org/use/tutorial.html
 
 
 ## About
@@ -22,6 +21,30 @@ make run
 
 
 ## debug
+
+### with lldb
+* debug with lldb - https://lldb.llvm.org/use/tutorial.html
+
+### with gdb
+-> gdb quick ref
+```
+break main
+
+# view sources
+list 
+
+print *scanner.current
+
+# continue
+c
+
+# step
+n
+
+# step in
+s
+
+```
 
 -> debug segment fault
 
