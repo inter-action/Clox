@@ -123,6 +123,7 @@ static uint8_t makeConstant(Value value) {
     return (uint8_t)constant;
 }
 
+// for types that not able to fit in one Byte
 static void emitConstant(Value value) {
     emitBytes(OP_CONSTANT, makeConstant(value));
 }

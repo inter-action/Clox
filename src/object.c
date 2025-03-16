@@ -12,8 +12,8 @@ static Obj* allocateObject(int size, ObjType type) {
     Obj* object = (Obj*)reallocate(NULL, 0, size);
     //                                   ^ the size would be greater than Obj, so it's ok
     object->type = type;
-
     object->next = vm.objects;
+    //             ^ need `extern vm` here
     vm.objects = object;
     return object;
 }
@@ -27,10 +27,12 @@ static ObjString* allocateString(char* chars, int length) {
     return string;
 }
 
+// convert c string to ObjString
 ObjString* takeString(char* chars, int length) {
     return allocateString(chars, length);
 }
 
+// convert c string to ObjString, create a new copy
 ObjString* copyString(const char* chars, int length) {
     char* heapChars = ALLOCATE(char, length + 1);
     memcpy(heapChars, chars, length);

@@ -21,6 +21,8 @@ typedef enum {
 } InterpretResult;
 
 // todo: why use extern here?
+// object.c depends on this `vm` variable which is declared in vm.c
+// basically export this `vm` variable declared in the c file
 extern VM vm;
 
 void initVM();

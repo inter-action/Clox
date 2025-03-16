@@ -32,4 +32,6 @@ void freeObjects() {
         freeObject(object);
         object = next;
     }
+    // remove last holding pointer
+    vm.objects = NULL;
 }
