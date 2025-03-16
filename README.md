@@ -21,6 +21,41 @@ make run
 ```
 
 
+## debug
+
+-> debug segment fault
+
+```
+# 
+gdb ./build/bin/Cloxd
+                
+
+(gdb) run < input-files
+
+(gdb) list
+(gdb) where
+```
+
+example:
+```
+git checkout <tag>
+make run
+
+# inside clox, you'll see segment fault error 
+> "a" + "b"
+
+# then u can debug with gdb
+```
+
+-> read from user input
+```
+# option 1
+(gdb) run < inputfile.txt
+
+# option 2, view your tty by type `tty` command
+(gdb) tty /dev/ttyb
+```
+
 ## src files
 
 ```
