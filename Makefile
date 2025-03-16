@@ -7,6 +7,11 @@ SRC_DIRS := ./src
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp' -or -name '*.c' -or -name '*.h')
 
 
+
+.PHONY: clean
+clean:
+	rm -rf build
+
 .PHONY: build
 build:
 	cmake --build build
@@ -14,7 +19,7 @@ build:
 run:
 	./build/bin/Clox
 
-configure:
+configure: clean
 	mkdir -p $(BUILD_DIR)
 	cmake -S . -B $(BUILD_DIR)
 
