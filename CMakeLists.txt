@@ -7,6 +7,12 @@ set(CMAKE_DEBUG_POSTFIX d)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+
+# Set the C and C++ compilers to Clang
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+
+
 add_library(tutorial_compiler_flags INTERFACE)
 
 # target_compile_features(tutorial_compiler_flags INTERFACE cxx_std_11)
@@ -16,7 +22,7 @@ add_library(tutorial_compiler_flags INTERFACE)
 set(gcc_like_cxx "$<COMPILE_LANG_AND_ID:CXX,ARMClang,AppleClang,Clang,GNU,LCC>")
 set(msvc_cxx "$<COMPILE_LANG_AND_ID:CXX,MSVC>")
 target_compile_options(tutorial_compiler_flags INTERFACE
-  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
+  "$<${gcc_like_cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused;-fsanitize=address>>"
   "$<${msvc_cxx}:$<BUILD_INTERFACE:-W3>>"
 )
 
@@ -26,6 +32,8 @@ aux_source_directory(./src SOURCES)
 # add the executable
 add_executable(Clox ${SOURCES})
 set_target_properties(Clox PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
+set_property(TARGET Clox PROPERTY C_STANDARD 23)
 
 # link libs
 target_link_libraries(Clox PUBLIC tutorial_compiler_flags)

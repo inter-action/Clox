@@ -20,7 +20,7 @@
 void initTable(Table* table) {
     table->count = 0;
     table->capacity = 0;
-    table->entries = NULL;
+    table->entries = nullptr;
 }
 
 void freeTable(Table* table) {
@@ -35,7 +35,7 @@ void freeTable(Table* table) {
 Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
     uint32_t index = key->hash % capacity;
 
-    Entry* tombstone = NULL;
+    Entry* tombstone = nullptr;
     while (true) {
         Entry* entry = &entries[index];
         // !: there's is no case that entry pointer can be NULL
@@ -48,26 +48,26 @@ Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
         // hash table and both a has the same hash value.
         // [NULL, NULL, a, tombstone, a, NULL, NULL]
         //                               ^ here we reached
-        if (entry->key == NULL) {
+        if (entry->key == nullptr) {
             if (IS_NIL(entry->value)) {
                 // we reach to NULL value
-                return tombstone != NULL ? tombstone : entry;
+                return tombstone != nullptr ? tombstone : entry;
             } else { // we found our tombstone
                 // we should place a dedicated tombstone type
                 // for readability
                 // tombstone satisfy both
-                //  - entry->key == NULL
+                //  - entry->key == nullptr
                 //  - entry->value == BOOL_VAL(true)
 
                 // mark the first tombstone
-                if (tombstone == NULL)
+                if (tombstone == nullptr)
                     tombstone = entry;
             }
         }
 
         // !we're comparing string's pointer, not string itself
         // @see https://craftinginterpreters.com/hash-tables.html#string-interning
-        if (entry->key == key || entry->key == NULL) {
+        if (entry->key == key || entry->key == nullptr) {
             return entry;
         }
         index = (index + 1) % capacity;
@@ -78,7 +78,7 @@ static void adjustCapacity(Table* table, int capacity) {
     Entry* entries = ALLOCATE(Entry, capacity);
     // c: it's important to initialize all the values after any malloc
     for (int i = 0; i < capacity; i++) {
-        entries[i].key = NULL;
+        entries[i].key = nullptr;
         entries[i].value = NIL_VAL;
     }
 
@@ -98,7 +98,7 @@ static void adjustCapacity(Table* table, int capacity) {
     table->count = 0;
     for (int i = 0; i < table->capacity; i++) {
         Entry* entry = &table->entries[i];
-        if (entry->key == NULL)
+        if (entry->key == nullptr)
             continue;
 
         // re-calc each index of hash table
@@ -106,7 +106,7 @@ static void adjustCapacity(Table* table, int capacity) {
         //            ^ this findEntry ensures tombstone as empty node
 
         // no need do this.
-        // bool isNewKey = dest>key != NULL;
+        // bool isNewKey = dest>key != nullptr;
         // if (isNewKey) table->count++;
 
         dest->key = entry->key;
@@ -126,7 +126,7 @@ bool tableGet(Table* table, ObjString* key, Value* value) {
         return false;
 
     Entry* entry = findEntry(table->entries, table->capacity, key);
-    if (entry->key == NULL) {
+    if (entry->key == nullptr) {
         return false;
     }
     *value = entry->value;
@@ -141,7 +141,7 @@ bool tableSet(Table* table, ObjString* key, Value value) {
     }
 
     Entry* entry = findEntry(table->entries, table->capacity, key);
-    bool isNewKey = entry->key == NULL;
+    bool isNewKey = entry->key == nullptr;
 
     if (isNewKey && IS_NIL(entry->value)) {
         //          ^ also not a tombstone
@@ -160,12 +160,12 @@ bool tableDelete(Table* table, ObjString* key) {
         return false;
 
     Entry* entry = findEntry(table->entries, table->capacity, key);
-    if (entry->key == NULL) {
+    if (entry->key == nullptr) {
         return false;
     }
 
     // Place a tombstone in the entry
-    entry->key = NULL;
+    entry->key = nullptr;
     entry->value = BOOL_VAL(true);
     // disable reduce count, as we need count tombstone in
     // as a factor to our array load
@@ -177,23 +177,23 @@ bool tableDelete(Table* table, ObjString* key) {
 void tableAddAll(Table* from, Table* to) {
     for (int i = 0; i < from->capacity; i++) {
         Entry* entry = &from->entries[i];
-        if (entry->key == NULL)
+        if (entry->key == nullptr)
             continue;
         tableSet(to, entry->key, entry->value);
     }
 }
 
-ObjString* tableFindString(Table* table, char* chars, int length, uint32_t hash) {
+ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash) {
     if (table->count == 0)
-        return NULL;
+        return nullptr;
 
     uint32_t index = hash % table->capacity;
     while (true) {
         Entry* entry = &table->entries[index];
-        if (entry->key == NULL) {
+        if (entry->key == nullptr) {
             // Stop if we find an empty non-tombstone entry.
             if (IS_NIL(entry->value))
-                return NULL;
+                return nullptr;
         } else if (entry->key->length == length && entry->key->hash == hash &&
                    memcmp(entry->key->chars, chars, length) == 0) {
             // found the key
