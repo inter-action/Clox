@@ -64,11 +64,13 @@ static void concatenate() {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    initTable(&vm.strings);
 }
 
 void freeVM() {
     // todo: also free `vm.chunk` ?
     freeObjects();
+    freeTable(&vm.strings);
 }
 
 static InterpretResult run() {

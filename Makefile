@@ -7,17 +7,16 @@ SRC_DIRS := ./src
 SRCS := $(shell find $(SRC_DIRS) -name '*.cpp' -or -name '*.c' -or -name '*.h')
 
 
-
-.PHONY: clean
-clean:
-	rm -rf build
+run:
+	./build/bin/Cloxd
 
 .PHONY: build
 build:
 	cmake --build build
 
-run:
-	./build/bin/Cloxd
+.PHONY: clean
+clean:
+	rm -rf $(BUILD_DIR)/*
 
 # build debug version by default
 configure: clean
@@ -30,7 +29,3 @@ fmt:
 
 debug_gdb:
 	gdb ./build/bin/Cloxd
-
-.PHONY: clean
-clean:
-	rm -r $(BUILD_DIR)/*

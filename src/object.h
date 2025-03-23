@@ -35,6 +35,7 @@ struct ObjString {
     //  that you can safely convert it to Obj or ObjString
     int length;
     char* chars;
+    uint32_t hash;
 };
 
 ObjString* takeString(char* chars, int length);

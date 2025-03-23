@@ -4,12 +4,18 @@
 
 ## Todos
 
+* https://en.wikipedia.org/wiki/Flexible_array_member
+
 
 
 ## About
 
 following book [crafting interpreters](https://craftinginterpreters.com/contents.html)
 
+## before coding
+* read build
+* read tips
+* read c23 feature
 
 ## build
 
@@ -98,6 +104,9 @@ vm               // the actual vm implementation, simply run instructions one by
 ```
 # view function doc
 man [3] realloc
+
+# in vim, same with `K` key in normal mode
+:Man realloc
 ```
 
 * Lsp configure clangd - https://clangd.llvm.org/installation.html
@@ -115,6 +124,16 @@ man [3] realloc
 
 all c related notes in code is marked with `// c:`
 
+-> c new standard features
+    * c23 - 
+        * https://lemire.me/blog/2024/01/21/c23-a-slightly-better-c/
+        * https://en.cppreference.com/w/c/23
+
+
+-> ! `realloc` vs `malloc`
+    * realloc will copy original content to new allocated heap. prefer to use this over `malloc`
+    * 
+
 -> pointer unit
 the unit for pointer is byte. as u can see from this link https://www.tutorialspoint.com/cprogramming/c_pointer_arithmetic.htm
 
@@ -124,6 +143,17 @@ the unit for pointer is byte. as u can see from this link https://www.tutorialsp
 
 -> when to put things in clang's header files
 * it's like a public exports. when u wanna other's to use/see this symbol
+
+
+-> clang conversion from Array to Pointer
+
+```
+int* arr = {1, 2, 4}
+
+arr[0] // type is int
+&arr[0] // type is int*
+
+```
 
 # chapter 14
 
