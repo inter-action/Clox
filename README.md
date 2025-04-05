@@ -25,6 +25,33 @@ make
 make run
 ```
 
+## visualize vm execution
+
+say we have 
+```
+var a = 3;
+print a + 4
+```
+
+```
+// after compilation, it turns into
+// instructions
+[OP_GLOBAL_DEFINE #1 OP_LOAD_GLOBAL a OP_LOAD #2 OP_ADD OP_PRINT OP_RETURN]
+// constants array
+[3, 4]
+
+// when vm executing, we have a gloabl varialbe table with entries
+[a->#1]
+
+// an execution memory stack
+[3]
+[3, 4]
+[7]
+// print 7
+[]
+// done. exiting.
+
+```
 
 ## debug
 
@@ -37,18 +64,18 @@ make run
 break main
 
 # view sources
-list 
+(gdb) list 
 
 print *scanner.current
 
 # continue
-c
+(gdb) c
 
 # step
-n
+(gdb) n
 
 # step in
-s
+(gdb) s
 
 ```
 

@@ -64,18 +64,21 @@ static void concatenate() {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    initTable(&vm.globals);
     initTable(&vm.strings);
 }
 
 void freeVM() {
     // todo: also free `vm.chunk` ?
     freeObjects();
+    freeTable(&vm.globals);
     freeTable(&vm.strings);
 }
 
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
+#define READ_STRING() AS_STRING(READ_CONSTANT())
 // ?: does this `double` break the abstraction for Value type?
 // I would think so, the better way is to use `Value` for type instead of double
 #define BINDARY_OP(valueType, op)                                                                                      \
@@ -121,6 +124,26 @@ static InterpretResult run() {
                 break;
             case OP_FALSE:
                 push(BOOL_VAL(false));
+                break;
+            case OP_POP:
+                pop();
+                break;
+            case OP_GET_GLOBAL: {
+                ObjString* name = READ_STRING();
+                Value value;
+                if (!tableGet(&vm.globals, name, &value)) {
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                push(value);
+                break;
+            }
+            case OP_DEFINE_GLOBAL:
+                ObjString* name = READ_STRING();
+                // set global variable with data from top of the stack
+                tableSet(&vm.globals, name, peek(0));
+                // peek first, as when peeking it still has an valid lifetime.
+                pop();
                 break;
             case OP_EQUAL: {
                 Value b = pop();
@@ -168,15 +191,20 @@ static InterpretResult run() {
                 }
                 push(NUMBER_VAL(-(AS_NUMBER(pop()))));
                 break;
-            case OP_RETURN: {
+            case OP_PRINT: {
                 printValue(pop());
                 printf("\n");
+                break;
+            }
+            case OP_RETURN: {
+                // Exit interpreter.
                 return INTERPRET_OK;
             }
         }
     }
 #undef READ_BYTE
 #undef READ_CONSTANT
+#undef READ_STRING
 #undef BINDARY_OP
 }
 
