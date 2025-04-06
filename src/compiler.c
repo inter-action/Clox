@@ -39,7 +39,7 @@ typedef enum {
 } Precedence;
 
 // clang function pointer
-typedef void (*ParseFn)();
+typedef void (*ParseFn)(bool canAssign);
 
 typedef struct {
     ParseFn prefix;
@@ -168,7 +168,7 @@ static void defineVariable(uint8_t global) {
     emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
-static void binary() {
+static void binary(bool canAssign) {
     //  - 10 + b * c
     //       ^ previous
     TokenType operatorType = parser.previous.type;
@@ -213,7 +213,7 @@ static void binary() {
     }
 }
 
-static void literal() {
+static void literal(bool canAssign) {
     switch (parser.previous.type) {
         case TOKEN_FALSE:
             emitByte(OP_FALSE);
@@ -291,7 +291,6 @@ static void declaration() {
     if (match(TOKEN_VAR)) {
         varDeclaration();
     } else {
-
         statement();
     }
 
@@ -307,31 +306,40 @@ static void statement() {
     }
 }
 
-static void grouping() {
+static void grouping(bool canAssign) {
     expression();
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-static void number() {
+static void number(bool canAssign) {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(NUMBER_VAL(value));
 }
 
-static void string() {
+static void string(bool canAssign) {
     // no beginning & ending quote ", or ending \0
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
-static void namedVariable(Token name) {
+static void namedVariable(Token name, bool canAssign) {
     uint8_t arg = identifierConstant(&name);
-    emitBytes(OP_GET_GLOBAL, arg);
+
+    if (canAssign && match(TOKEN_EQUAL)) {
+        // var a = 3;
+        //         ^
+        // now match expression, this case 3
+        expression();
+        emitBytes(OP_SET_GLOBAL, arg);
+    } else {
+        emitBytes(OP_GET_GLOBAL, arg);
+    }
 }
 
-static void variable() {
-    namedVariable(parser.previous);
+static void variable(bool canAssign) {
+    namedVariable(parser.previous, canAssign);
 }
 
-static void unary() {
+static void unary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
 
     // Compile the operand
@@ -426,8 +434,13 @@ static void parsePrecedence(Precedence precedence) {
         return;
     }
 
-    prefixRule();
+    bool canAssign = precedence <= PREC_ASSIGNMENT;
+    prefixRule(canAssign);
 
+    // - if we are at 10 + b * c
+    //                         ^ , variable c has lower precedence
+    //                         than any other rule, so it'll just
+    //                         stop at while loop
     while (precedence <= getRule(parser.current.type)->precedence) {
         advance();
         //  - 10 + b * c
@@ -435,7 +448,20 @@ static void parsePrecedence(Precedence precedence) {
         ParseFn infixRule = getRule(parser.previous.type)->infix;
         //  - 10 + b * c
         //       ^ binary
-        infixRule();
+        infixRule(canAssign); // no need, but c type system require this
+    }
+
+    // say we're parsing
+    // a*b=c;
+    // ^ canAssign == true, we're in frame A
+    // a*b=c;
+    //   ^ canAssign == false, compilation result [a,b,*], we're in frame B
+    // a*b=c;
+    //    ^ step out of binary function (frame B), we're in frame A,
+    //    so canAssign == true, and we also exit while loop due to
+    //    `=` sign has precedence of PREC_NONE
+    if (canAssign && match(TOKEN_EQUAL)) {
+        error("Invalid assigment target.");
     }
 }
 
@@ -443,6 +469,11 @@ static ParseRule* getRule(TokenType type) {
     return &rules[type];
 }
 
+// for example,
+// when paring a + b * c, it'll generate instruction roughly
+// like  :[ a b c * +]
+// when paring a * b + c, the output would then be
+// output:[ a b * c +]
 bool compile(const char* source, Chunk* chunk) {
     initScanner(source);
     compilingChunk = chunk;

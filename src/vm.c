@@ -138,13 +138,26 @@ static InterpretResult run() {
                 push(value);
                 break;
             }
-            case OP_DEFINE_GLOBAL:
+            case OP_DEFINE_GLOBAL: {
                 ObjString* name = READ_STRING();
                 // set global variable with data from top of the stack
                 tableSet(&vm.globals, name, peek(0));
                 // peek first, as when peeking it still has an valid lifetime.
                 pop();
                 break;
+            }
+            case OP_SET_GLOBAL: {
+                ObjString* name = READ_STRING();
+                if (tableSet(&vm.globals, name, peek(0))) {
+                    // if not already existed in the global variable table, then
+                    // it's error to set this variable.
+                    // clox need global variable to be declared first
+                    tableDelete(&vm.globals, name);
+                    runtimeError("Undefined variable '%s'.", name->chars);
+                    return INTERPRET_RUNTIME_ERROR;
+                }
+                break;
+            }
             case OP_EQUAL: {
                 Value b = pop();
                 Value a = pop();

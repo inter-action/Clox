@@ -37,7 +37,7 @@ print a + 4
 // after compilation, it turns into
 // instructions
 [OP_GLOBAL_DEFINE #1 OP_LOAD_GLOBAL a OP_LOAD #2 OP_ADD OP_PRINT OP_RETURN]
-// constants array
+// constants array, store string, number...etc
 [3, 4]
 
 // when vm executing, we have a gloabl varialbe table with entries
@@ -147,7 +147,7 @@ man [3] realloc
 
 # Notes
 
-## c language
+## c language, clang
 
 all c related notes in code is marked with `// c:`
 
@@ -181,6 +181,15 @@ arr[0] // type is int
 &arr[0] // type is int*
 
 ```
+
+-> clang function pointer
+```
+typedef void (*ParseFn)(bool canAssign);
+//                           ^ clang require varialbe name
+```
+
+-> others
+- in c, function order matters. if A depends on B, then B must declared before A
 
 # chapter 14
 

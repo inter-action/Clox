@@ -133,7 +133,7 @@ bool tableGet(Table* table, ObjString* key, Value* value) {
     return true;
 }
 
-// @returns isNewKey, if the entry is newly created
+// @returns {bool} isNewKey, if the entry is newly created
 bool tableSet(Table* table, ObjString* key, Value value) {
     if (table->count + 1 > table->capacity * TABLE_MAX_LOAD) {
         int capacity = GROW_CAPACITY(table->capacity);
